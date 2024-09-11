@@ -1,20 +1,53 @@
-import React from "react";
+import { Link } from 'react-router-dom';
+import React, { useContext, useState, useEffect } from 'react';
+import { ContextGlobal } from '../Components/utils/global.context';
+import doctorImage from '../../public/images/doctor.jpg';
+import starIcon from '../../public/star.png';
+import filledStarIcon from '../../public/filled-star.png'; 
 
+const Card = ({ name, username, id, addToFavorites }) => {
+  const { theme } = useContext(ContextGlobal);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [hovered, setHovered] = useState(false); 
 
-const Card = ({ name, username, id }) => {
+  useEffect(() => {
 
-  const addFav = ()=>{
-    // Aqui iria la logica para agregar la Card en el localStorage
-  }
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const isFav = favorites.some(fav => fav.id === id);
+    setIsFavorite(isFav);
+  }, [id]);
 
-  return (
-    <div className="card">
-        {/* En cada card deberan mostrar en name - username y el id */}
+  const handleToggleFavorite = () => {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (isFavorite) {
 
-        {/* No debes olvidar que la Card a su vez servira como Link hacia la pagina de detalle */}
+      const updatedFavorites = favorites.filter(fav => fav.id !== id);
+      localStorage.setItem('favorites', JSON.stringify(updatedFavorites));
+      setIsFavorite(false);
+    } else {
 
-        {/* Ademas deberan integrar la logica para guardar cada Card en el localStorage */}
-        <button onClick={addFav} className="favButton">Add fav</button>
+      addToFavorites({ id, name, username });
+      setIsFavorite(true);
+    }
+  };
+
+   return (
+    <div className={`card ${theme}`}>
+      <img src={doctorImage} alt={`Imagen del dentista ${name}`} className="dentist-image" />
+      <h2>{name}</h2>
+      <p>{username}</p>
+
+      <img
+        src={isFavorite || hovered ? filledStarIcon : starIcon}
+        alt="Favorite Icon"
+        className="star-icon"
+        onClick={handleToggleFavorite}
+        onMouseEnter={() => setHovered(true)}  
+        onMouseLeave={() => setHovered(false)} 
+        style={{ cursor: 'pointer' }} 
+      />
+
+      <Link to={`/dentist/${id}`}>View Details</Link>
     </div>
   );
 };

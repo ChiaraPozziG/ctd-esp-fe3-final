@@ -1,19 +1,44 @@
-import React from "react";
-import Card from "../Components/Card";
+import React, { useState, useEffect, useContext } from 'react';
+import { ContextGlobal } from '../Components/utils/global.context';
+import Card from '../Components/Card';
 
-//Este componente debera ser estilado como "dark" o "light" dependiendo del theme del Context
+const Favorites = () => {
+  const { theme } = useContext(ContextGlobal);
+  const [favorites, setFavorites] = useState([]);
 
-const Favs = () => {
+  useEffect(() => {
+    const storedFavorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    setFavorites(storedFavorites);
+  }, []);
+
+  const addToFavorites = (dentist) => {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    if (!favorites.some(fav => fav.id === dentist.id)) {
+      favorites.push(dentist);
+      localStorage.setItem('favorites', JSON.stringify(favorites));
+    }
+  };
 
   return (
-    <>
-      <h1>Dentists Favs</h1>
-      <div className="card-grid">
-        {/* este componente debe consumir los destacados del localStorage */}
-        {/* Deberan renderizar una Card por cada uno de ellos */}
+    <main className={`favorites ${theme}`}>
+      <h1>Favorites</h1>
+      <div className='card-grid'>
+        {favorites.length > 0 ? (
+          favorites.map(dentist => (
+            <Card
+              key={dentist.id}
+              name={dentist.name}
+              username={dentist.username}
+              id={dentist.id}
+              addToFavorites={addToFavorites} // Aunque no es necesario aquí
+            />
+          ))
+        ) : (
+          <p>No favorites yet</p>
+        )}
       </div>
-    </>
+    </main>
   );
-};
+}
 
-export default Favs;
+export default Favorites;
