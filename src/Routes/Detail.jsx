@@ -27,7 +27,7 @@ const Detail = () => {
 
   return (
     <main className={`detail ${theme}`}>
-      <h1>Detail Dentist {dentist.id}</h1>
+      <h1>Dentist {dentist.username} details</h1>
       <div className="dentist-info">
         <p><strong>Nombre:</strong> {dentist.name}</p>
         <p><strong>Email:</strong> {dentist.email}</p>
